@@ -1,0 +1,123 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: factory-mongo
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: mongodb
+  namespace: factory-mongo
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: 'system:openshift:scc:privileged'
+  namespace: factory-mongo
+subjects:
+  - kind: ServiceAccount
+    name: mongodb
+    namespace: factory-mongo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: 'system:openshift:scc:privileged'
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: mongodb
+  namespace: factory-mongo
+data:
+  MONGODB_ADMIN_PASSWORD: cWlvdG1hbnVmYWN0dXJpbmdtb25nb2FkbWlucGFzcw==
+  MONGODB_DATABASE: cWlvdG1vbmdv
+  MONGODB_PASSWORD: bW9uZ29wYXNz
+  MONGODB_USER: bW9uZ291c2Vy
+type: Opaque
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mongodb
+  namespace: factory-mongo
+  labels:
+    app: mongodb
+    app.kubernetes.io/component: mongodb
+    app.kubernetes.io/instance: mongodb
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/part-of: factory-mongo
+    app.openshift.io/runtime: mongodb
+    app.openshift.io/runtime-namespace: openshift
+    app.openshift.io/runtime-version: '3.6'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mongodb
+        deploymentconfig: mongodb
+    spec:
+      restartPolicy: Always
+      serviceAccountName: mongodb
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsUser: 0
+      containers:
+        - resources:
+            limits:
+              cpu: 500m
+              memory: 2Gi
+          terminationMessagePath: /dev/termination-log
+          name: mongodb
+          ports:
+            - containerPort: 27017
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: mongodb-1
+              mountPath: /var/lib/mongodb/data
+          terminationMessagePolicy: File
+          envFrom:
+            - secretRef:
+                name: mongodb
+          image: >-
+            registry.redhat.io/rhscl/mongodb-36-rhel7@sha256:8dc9932eabd30f2ee4d0b882500c65b48f3c2fbbd85bfd51d0d18410af404a39
+      serviceAccount: mongodb
+      volumes:
+        - name: mongodb-1
+          hostPath:
+            path: /mnt/hpvolumes/mongodb
+            type: ''
+      dnsPolicy: ClusterFirst
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongodb
+  namespace: factory-mongo
+spec:
+  ports:
+    - name: 27017-tcp
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
+  selector:
+    app: mongodb
+    deploymentconfig: mongodb
+  type: ClusterIP
+  sessionAffinity: None
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
