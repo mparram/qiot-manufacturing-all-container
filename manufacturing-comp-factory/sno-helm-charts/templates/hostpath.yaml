@@ -12,14 +12,40 @@ spec:
       units:
         - contents: |
             [Unit]
-            Description=Set SELinux chcon for hostpath volumes in SNO
+            Description=Create directory for mongodb
             Before=kubelet.service
             [Service]
             Type=oneshot
             RemainAfterExit=yes
-            ExecStartPre=-mkdir -p /mnt/hpvolumes
+            ExecStartPre=mkdir -p /mnt/hpvolumes/mongodb
+            ExecStart=chown core:core /mnt/hpvolumes/mongodb
+            [Install]
+            WantedBy=multi-user.target
+          enabled: true
+          name: hostpath-mongodb.service
+        - contents: |
+            [Unit]
+            Description=Create directory for PostgreSQL
+            Before=kubelet.service
+            [Service]
+            Type=oneshot
+            RemainAfterExit=yes
+            ExecStartPre=mkdir -p /mnt/hpvolumes/postgresql
+            ExecStart=chown core:core /mnt/hpvolumes/postgresql
+            [Install]
+            WantedBy=multi-user.target
+          enabled: true
+          name: hostpath-postgresql.service
+        - contents: |
+            [Unit]
+            Description=Set SELinux chcon for hostpath provisioner
+            Before=kubelet.service
+            [Service]
+            Type=oneshot
+            RemainAfterExit=yes
+            ExecStartPre=mkdir -p /mnt/hpvolumes
             ExecStart=/usr/bin/chcon -Rt container_file_t /mnt/hpvolumes
             [Install]
             WantedBy=multi-user.target
           enabled: true
-          name: hostpath-provisioner-sno.service
+          name: hostpath-provisioner.service
