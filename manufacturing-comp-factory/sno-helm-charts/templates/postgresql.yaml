@@ -23,6 +23,35 @@ roleRef:
   kind: ClusterRole
   name: 'system:openshift:scc:privileged'
 ---
+  apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    name: postgresql-pv
+    labels:
+      type: local
+  spec:
+    storageClassName: manual 
+    capacity:
+      storage: 5Gi
+    accessModes:
+      - ReadWriteOnce 
+    persistentVolumeReclaimPolicy: Retain
+    hostPath:
+      path: "/mnt/hpvolumes/postgresql" 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-pvc
+  namespace: factory-postgre
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: manual
+---
 kind: Secret
 apiVersion: v1
 metadata:
@@ -88,9 +117,8 @@ spec:
       serviceAccount: postgresql
       volumes:
         - name: postgresql-1
-          hostPath:
-            path: /mnt/hpvolumes/postgresql
-            type: ''
+          persistentVolumeClaim:
+            claimName: postgresql-pvc
       dnsPolicy: ClusterFirst
   strategy:
     type: RollingUpdate
