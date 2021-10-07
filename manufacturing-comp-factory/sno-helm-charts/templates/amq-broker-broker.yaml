@@ -1,40 +1,40 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: {{ .Values.amq-broker.namespace }} factory-amq-broker
+  name: {{ .Values.amqbroker.namespace }}
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: amq-broker
-  namespace: {{ .Values.amq-broker.namespace }}
+  namespace: {{ .Values.amqbroker.namespace }}
 spec:
   channel: current
   installPlanApproval: Automatic
   name: amq-broker
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: {{ .Values.amq-broker.startingCSV }}
+  startingCSV: {{ .Values.amqbroker.startingCSV }}
 ---
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-  name: {{ .Values.amq-broker.namespace }}
-  namespace: {{ .Values.amq-broker.namespace }}
+  name: {{ .Values.amqbroker.namespace }}
+  namespace: {{ .Values.amqbroker.namespace }}
 spec:
   targetNamespaces:
-    - {{ .Values.amq-broker.namespace }}
+    - {{ .Values.amqbroker.namespace }}
 ---
 apiVersion: broker.amq.io/v2alpha4
 kind: ActiveMQArtemis
 metadata:
-  name: {{ .Values.amq-broker.brokerName }}
-  application: {{ .Values.amq-broker.brokerName }}
-  namespace: {{ .Values.amq-broker.namespace }}
+  name: {{ .Values.amqbroker.brokerName }}
+  application: {{ .Values.amqbroker.brokerName }}
+  namespace: {{ .Values.amqbroker.namespace }}
 spec:
-  adminPassword: {{ .Values.amq-broker.adminPassword }}
+  adminPassword: {{ .Values.amqbroker.adminPassword }}
   deploymentPlan:
-    size: {{ .Values.amq-broker.size }}
+    size: {{ .Values.amqbroker.size }}
     persistenceEnabled: false
     requireLogin: false
     messageMigration: false
@@ -42,4 +42,4 @@ spec:
     journalType: nio
     jolokiaAgentEnabled: false
     image: placeholder
-  adminUser: {{ .Values.amq-broker.adminUser }}
+  adminUser: {{ .Values.amqbroker.adminUser }}
