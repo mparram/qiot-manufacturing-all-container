@@ -18,6 +18,7 @@ spec:
   sourceNamespace: openshift-marketplace
   startingCSV: openshift-gitops-operator.v1.2.1
 ---
+{{ if .Values.gitops.clusterAdminController }}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -45,6 +46,7 @@ spec:
     server: '*'
   sourceRepos:
   - '*'
+{{ end }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: ArgoCD
@@ -155,4 +157,4 @@ spec:
   initialRepositories: |
     - name: cluster-config
       type: git
-      url: https://github.com/qiot-project/qiot-manufacturing-factory-gitops.git
+      url: {{ .Values.gitops.initialRepository }}

@@ -1,42 +1,40 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: factory-amq-broker
+  name: {{ .Values.amq-broker.namespace }} factory-amq-broker
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  labels:
-    operators.coreos.com/amq-broker.factory-amq-broker: ''
   name: amq-broker
-  namespace: factory-amq-broker
+  namespace: {{ .Values.amq-broker.namespace }}
 spec:
   channel: current
   installPlanApproval: Automatic
   name: amq-broker
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: amq-broker-operator.v7.8.1-opr-3
+  startingCSV: {{ .Values.amq-broker.startingCSV }}
 ---
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-  name: factory-amq-broker
-  namespace: factory-amq-broker
+  name: {{ .Values.amq-broker.namespace }}
+  namespace: {{ .Values.amq-broker.namespace }}
 spec:
   targetNamespaces:
-    - factory-amq-broker
+    - {{ .Values.amq-broker.namespace }}
 ---
 apiVersion: broker.amq.io/v2alpha4
 kind: ActiveMQArtemis
 metadata:
-  name: factory01-broker
-  application: factory01-app
-  namespace: factory-amq-broker
+  name: {{ .Values.amq-broker.brokerName }}
+  application: {{ .Values.amq-broker.brokerName }}
+  namespace: {{ .Values.amq-broker.namespace }}
 spec:
-  adminPassword: qiotmanufacturingpassword
+  adminPassword: {{ .Values.amq-broker.adminPassword }}
   deploymentPlan:
-    size: 1
+    size: {{ .Values.amq-broker.size }}
     persistenceEnabled: false
     requireLogin: false
     messageMigration: false
@@ -44,4 +42,4 @@ spec:
     journalType: nio
     jolokiaAgentEnabled: false
     image: placeholder
-  adminUser: qiotmanufacturing
+  adminUser: {{ .Values.amq-broker.adminUser }}

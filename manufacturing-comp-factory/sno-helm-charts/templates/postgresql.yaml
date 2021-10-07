@@ -1,23 +1,23 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: factory-postgre
+  name: {{ .Values.postgresql.namespace }}
 ---
 kind: ServiceAccount
 apiVersion: v1
 metadata:
   name: postgresql
-  namespace: factory-postgre
+  namespace: {{ .Values.postgresql.namespace }}
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: 'system:openshift:scc:privileged'
-  namespace: factory-postgre
+  namespace: {{ .Values.postgresql.namespace }}
 subjects:
   - kind: ServiceAccount
     name: postgresql
-    namespace: factory-postgre
+    namespace: {{ .Values.postgresql.namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -32,42 +32,42 @@ roleRef:
   spec:
     storageClassName: manual 
     capacity:
-      storage: 5Gi
+      storage: {{ .Values.postgresql.storageCapacity }}
     accessModes:
       - ReadWriteOnce 
     persistentVolumeReclaimPolicy: Retain
     hostPath:
-      path: "/mnt/hpvolumes/postgresql" 
+      path: {{ .Values.postgresql.path }} 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgresql-pvc
-  namespace: factory-postgre
+  namespace: {{ .Values.postgresql.namespace }}
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: {{ .Values.postgresql.storageCapacity }}
   storageClassName: manual
 ---
 kind: Secret
 apiVersion: v1
 metadata:
   name: postgresql
-  namespace: factory-postgre
+  namespace: {{ .Values.postgresql.namespace }}
 stringData:
-  POSTGRESQL_DATABASE: qiot_manufacturing
-  POSTGRESQL_PASSWORD: qiotmanufacturingpassword
-  POSTGRESQL_USER: qiotmanufacturing
+  POSTGRESQL_DATABASE: {{ .Values.postgresql.POSTGRESQL_DATABASE }}
+  POSTGRESQL_PASSWORD: {{ .Values.postgresql.POSTGRESQL_PASSWORD }}
+  POSTGRESQL_USER: {{ .Values.postgresql.POSTGRESQL_USER }}
 type: Opaque
 ---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: postgresql
-  namespace: factory-postgre
+  namespace: {{ .Values.postgresql.namespace }}
   labels:
     app: postgresql
     app.kubernetes.io/component: postgresql
@@ -132,7 +132,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: postgresql
-  namespace: factory-postgre
+  namespace: {{ .Values.postgresql.namespace }}
 spec:
   ports:
     - name: postgresql
