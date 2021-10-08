@@ -1,8 +1,0 @@
-name: sno-amq-broker
-amqbroker:
-  namespace: factory-amq-broker
-  startingCSV: amq-broker-operator.v7.8.1-opr-3
-  brokerName: factory01-broker
-  adminPassword: qiotmanufacturingpassword
-  adminUser: qiotmanufacturing
-  size: 1

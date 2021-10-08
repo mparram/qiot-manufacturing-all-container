@@ -1,9 +1,0 @@
-name: sno-postgresql
-
-postgresql:
-  namespace: factory-postgresql
-  path: "/mnt/hpvolumes/mongodb"
-  storageCapacity: 5Gi
-  POSTGRESQL_DATABASE: qiot_manufacturing
-  POSTGRESQL_PASSWORD: qiotmanufacturingpassword
-  POSTGRESQL_USER: qiotmanufacturing

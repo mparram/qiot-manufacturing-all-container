@@ -1,6 +1,0 @@
-name: sno-hostpath
-
-mongo:
-  path: "/mnt/hpvolumes/mongodb"
-postgresql:
-  path: "/mnt/hpvolumes/mongodb"

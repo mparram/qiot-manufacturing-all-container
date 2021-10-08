@@ -1,6 +1,0 @@
-apiVersion: v2
-name: sno-amq-broker
-description: Helm chart to deploy factory components to SNO
-type: application
-version: 0.0.1
-appVersion: "1.0.0"
