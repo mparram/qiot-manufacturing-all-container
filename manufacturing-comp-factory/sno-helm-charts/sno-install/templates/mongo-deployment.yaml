@@ -41,7 +41,7 @@ spec:
             - secretRef:
                 name: mongodb
           image: >-
-            registry.redhat.io/rhscl/mongodb-36-rhel7@sha256:8dc9932eabd30f2ee4d0b882500c65b48f3c2fbbd85bfd51d0d18410af404a39
+            registry.redhat.io/rhscl/mongodb-36-rhel7:latest
       serviceAccount: mongodb
       volumes:
         - name: mongodb-1
