@@ -1,0 +1,6 @@
+name: sno-gitops
+
+gitops:
+  clusterAdminController: true
+  startingCSV: openshift-gitops-operator.v1.2.1
+  initialRepository: https://github.com/qiot-project/qiot-manufacturing-factory-gitops.git

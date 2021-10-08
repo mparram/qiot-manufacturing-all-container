@@ -1,0 +1,6 @@
+apiVersion: v2
+name: sno-gitops
+description: Helm chart to deploy openshift-gitops to SNO
+type: application
+version: 0.0.1
+appVersion: "1.0.0"
